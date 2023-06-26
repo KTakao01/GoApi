@@ -28,7 +28,7 @@ on:
             username: ${{ secrets.DOCKER_HUB_USERNAME }}
             password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-        - name: Build and push:
+        - name: Build and push
           uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825
           with:
             context: .
