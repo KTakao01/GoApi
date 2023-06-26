@@ -16,7 +16,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@818d4b7b91585d195f67
+        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175
         with:
           images: ${{ secrets.DOCKER_HUB_USERNAME}}/goapi_docker_build
       
