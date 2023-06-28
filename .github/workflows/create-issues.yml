@@ -1,5 +1,5 @@
 
-name: Jira Example
+name: creating issue in Jira 
 
 on:
   issues:
@@ -23,7 +23,7 @@ jobs:
       uses: atlassian/gajira-create@v2.0.1
       with:
         # プロジェクトキーを指定
-        project: AC
+        project: GOAP
         # 課題タイプを指定
         issuetype: Task
         # issuesのタイトルが要約になるように設定
