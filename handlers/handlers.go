@@ -54,5 +54,3 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Invalid method", http.StatusMethodNotAllowed)
 	}
 }
-
-//test
