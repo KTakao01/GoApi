@@ -64,7 +64,8 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	article := models.Article1
 	jsonData, err := json.Marshal(article)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("fail to encode json (articleID %d)\n", article), http.StatusInternalServerError)
+		errMsg := fmt.Sprintf("fail to encode json (articleID %d)\n", articleID)
+		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
 	w.Write(jsonData)
