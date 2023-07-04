@@ -21,11 +21,16 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	//1.バイトスライスreqBodybufferをなんらかの形で用意
 
-	var reqBodybuffer []byte
+	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	if err != nil {
+		http.Error(w, "cannot get content length\n", http.StatusBadRequest)
+		return
+	}
+	reqBodybuffer := make([]byte, length)
 
 	//2.Readメソッドでリクエストボディを読み出し
 	if _, err := req.Body.Read(reqBodybuffer); !errors.Is(err, io.EOF) {
-		http.Error(w, "fail to get request body\n", http.StatusBadRequest)
+		http.Error(w, "fail to get request body\n", http.StatusInternalServerError)
 		return
 
 	}
