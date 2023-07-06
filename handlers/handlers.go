@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,6 +19,25 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 
 // POST /article　のハンドラ
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
+	//1.バイトスライスreqBodybufferをなんらかの形で用意
+
+	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	if err != nil {
+		http.Error(w, "cannot get content length\n", http.StatusBadRequest)
+		return
+	}
+	reqBodybuffer := make([]byte, length)
+
+	//2.Readメソッドでリクエストボディを読み出し
+	if _, err := req.Body.Read(reqBodybuffer); !errors.Is(err, io.EOF) {
+		http.Error(w, "fail to get request body\n", http.StatusInternalServerError)
+		return
+
+	}
+
+	//3.ボディをCloseする
+	defer req.Body.Close()
+
 	article := models.Article1
 	jsonData, err := json.Marshal(article)
 	if err != nil {
@@ -64,7 +84,8 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	article := models.Article1
 	jsonData, err := json.Marshal(article)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("fail to encode json (articleID %d)\n", article), http.StatusInternalServerError)
+		errMsg := fmt.Sprintf("fail to encode json (articleID %d)\n", articleID)
+		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
 	w.Write(jsonData)
