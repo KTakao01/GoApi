@@ -6,6 +6,10 @@ import (
 	"github.com/KTakao01/GoApi/models"
 )
 
+const (
+	articleNumPerPage = 5
+)
+
 func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	const sqlStr = `
 	insert into articles (title,contents,username,nice,created_at) values
@@ -34,9 +38,8 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 		`
 
 	var articleArray []models.Article
-	var limit int = 5
 
-	rows, err := db.Query(sqlStr, limit, (page-1)*limit)
+	rows, err := db.Query(sqlStr, articleNumPerPage, (page-1)*articleNumPerPage)
 	if err != nil {
 		return nil, err
 	}
