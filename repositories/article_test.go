@@ -34,7 +34,7 @@ func TestSelectArticleDetail(t *testing.T) {
 				Title:    "firstPost",
 				Contents: "This is my first blog",
 				UserName: "takao",
-				NiceNum:  3,
+				NiceNum:  5,
 			},
 		}, {
 			testTitle: "subtest2",
@@ -95,6 +95,31 @@ func TestInsertArticle(t *testing.T) {
 			where title = ? and contents = ? and username = ?
 		`
 		testDB.Exec(sqlStr, article.Title, article.Contents, article.UserName)
-
+		testDB.Exec("alter table articles auto_increment = 1")
 	})
+}
+
+func TestUpdateNiceNum(t *testing.T) {
+
+	articleID := 1
+
+	before, err := repositories.SelectArticleDetail(testDB, articleID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = repositories.UpdateNiceNum(testDB, articleID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	after, err := repositories.SelectArticleDetail(testDB, articleID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if after.NiceNum-before.NiceNum != 1 {
+		t.Errorf("article NiceNum increase expected %d but got %d", 1, after.NiceNum-before.NiceNum)
+	}
+
 }
