@@ -107,6 +107,7 @@ func UpdateNiceNum(db *sql.DB, articleID int) error {
 
 	var nicenum int
 
+	// 変数 nicenum に現在のいいね数を読み込む
 	err = row.Scan(&nicenum)
 	if err != nil {
 		tx.Rollback()
