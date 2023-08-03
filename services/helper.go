@@ -12,7 +12,8 @@ func getDBConn() string {
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbDatabase := os.Getenv("DB_NAME")
-	return fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+	dbHost := os.Getenv("DB_HOST")
+	return fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", dbUser, dbPassword, dbHost, dbDatabase)
 }
 
 func connectDB() (*sql.DB, error) {
