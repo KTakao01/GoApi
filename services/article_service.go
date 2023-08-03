@@ -82,10 +82,17 @@ func PostNiceService(article models.Article) (models.Article, error) {
 
 	//指定IDの記事のいいね数を+1して結果を返却
 	//いいね数を+1
-	updatedArticle, err := repositories.UpdateNiceNum(db, article.ID)
+	err = repositories.UpdateNiceNum(db, article.ID)
 	if err != nil {
 		return models.Article{}, err
 	}
 
-	return updatedArticle, nil
+	return models.Article{
+		ID:        article.ID,
+		Title:     article.Title,
+		Contents:  article.Contents,
+		UserName:  article.UserName,
+		NiceNum:   article.NiceNum + 1,
+		CreatedAt: article.CreatedAt,
+	}, nil
 }
