@@ -7,11 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/KTakao01/GoApi/controllers"
-	"github.com/KTakao01/GoApi/services"
+	"github.com/KTakao01/GoApi/api"
 	_ "github.com/go-sql-driver/mysql"
-
-	"github.com/KTakao01/GoApi/routers"
 )
 
 var (
@@ -30,10 +27,7 @@ func main() {
 		return
 	}
 
-	ser := services.NewMyAppService(db)
-	aCon := controllers.NewArticleController(ser)
-	cCon := controllers.NewCommentController(ser)
-	r := routers.NewRouter(aCon, cCon)
+	r := api.NewRouter(db)
 
 	log.Println("server start at port 8080")
 	//サーバー起動
