@@ -1,8 +1,10 @@
 package services
 
 import (
-	"log"
+	"database/sql"
+	"errors"
 
+	"github.com/KTakao01/GoApi/apperrors"
 	"github.com/KTakao01/GoApi/models"
 	"github.com/KTakao01/GoApi/repositories"
 )
@@ -11,12 +13,18 @@ func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) 
 	//記事の詳細を取得
 	article, err := repositories.SelectArticleDetail(s.db, articleID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = apperrors.NAData.Wrap(err, "no data")
+			return models.Article{}, err
+		}
+		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
 		return models.Article{}, err
 	}
 
 	//コメント一覧を取得
 	commentList, err := repositories.SelectCommentList(s.db, articleID)
 	if err != nil {
+		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
 		return models.Article{}, err
 	}
 
@@ -31,6 +39,7 @@ func (s *MyAppService) PostArticleService(article models.Article) (models.Articl
 	//記事データをDBに挿入する
 	newArticle, err := repositories.InsertArticle(s.db, article)
 	if err != nil {
+		err = apperrors.InsertDataFailed.Wrap(err, "fail to record data")
 		return models.Article{}, err
 	}
 
@@ -42,7 +51,12 @@ func (s *MyAppService) GetArticleListService(page int) ([]models.Article, error)
 	//指定ページの記事一覧をDBから取得する
 	articleList, err := repositories.SelectArticleList(s.db, page)
 	if err != nil {
-		log.Printf("Error selecting article list: %v", err)
+		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
+		return nil, err
+	}
+
+	if len(articleList) == 0 {
+		err := apperrors.NAData.Wrap(ErrNoData, "no data")
 		return nil, err
 	}
 
@@ -55,6 +69,11 @@ func (s *MyAppService) PostNiceService(article models.Article) (models.Article, 
 	//いいね数を+1
 	err := repositories.UpdateNiceNum(s.db, article.ID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = apperrors.NoTargetData.Wrap(err, "does not exist target data")
+			return models.Article{}, err
+		}
+		err = apperrors.UpdateDataFailed.Wrap(err, "fail to update data")
 		return models.Article{}, err
 	}
 
