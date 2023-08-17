@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/KTakao01/GoApi/apperrors"
 	"github.com/KTakao01/GoApi/controllers/services"
 	"github.com/KTakao01/GoApi/models"
 	"github.com/gorilla/mux"
@@ -33,6 +34,7 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 
 	//JSONデコーダー
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
@@ -63,6 +65,7 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 	log.Printf("Page number: %d\n", page)
 	articleList, err := c.service.GetArticleListService(page)
 	if err != nil {
+		err = apperrors.BadParameter.Wrap(err, "queryparam must be number")
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
 		return
 	}

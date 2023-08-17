@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/KTakao01/GoApi/apperrors"
 	"github.com/KTakao01/GoApi/controllers/services"
 	"github.com/KTakao01/GoApi/models"
 )
@@ -21,6 +22,7 @@ func (c *CommentController) PostCommentHandler(w http.ResponseWriter, req *http.
 	var reqComment models.Comment
 
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 	comment, err := c.service.PostCommentService(reqComment)
