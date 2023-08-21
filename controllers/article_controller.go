@@ -2,12 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/KTakao01/GoApi/apperrors"
 	"github.com/KTakao01/GoApi/controllers/services"
 	"github.com/KTakao01/GoApi/models"
 	"github.com/gorilla/mux"
@@ -33,12 +32,14 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 
 	//JSONデコーダー
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
-		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
+		apperrors.ErrorHandler(w, req, err)
+		return
 	}
 
 	article, err := c.service.PostArticleService(reqArticle)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 	//JSONエンコーダー
@@ -54,23 +55,22 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 		var err error
 		page, err = strconv.Atoi(p[0])
 		if err != nil {
-			http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+			apperrors.ErrorHandler(w, req, err)
 			return
 		}
 	} else {
 		page = 1
 	}
-	log.Printf("Page number: %d\n", page)
+
 	articleList, err := c.service.GetArticleListService(page)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(articleList)
 	if err != nil {
-		log.Printf("Error encoding JSON: %v\n", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 }
@@ -80,13 +80,14 @@ func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *htt
 	idParam := mux.Vars(req)["id"]
 	articleID, err := strconv.Atoi(idParam)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid query parameter: %v", idParam), http.StatusBadRequest)
+		err = apperrors.BadParam.Wrap(err, "pathparam must be number")
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 	//resString := fmt.Sprintf("Article No.%d\n", articleID)
 	article, err := c.service.GetArticleService(articleID)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
@@ -98,12 +99,13 @@ func (c *ArticleController) PostNiceHandler(w http.ResponseWriter, req *http.Req
 	var reqArticle models.Article
 	//リクエスト情報をデコード
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
-		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
+		apperrors.ErrorHandler(w, req, err)
 	}
 	//リクエスト情報に基づいてnice+1(DBデータから+1ではないことに注意)
 	article, err := c.service.PostNiceService(reqArticle)
 	if err != nil {
-		http.Error(w, "fail internal exex\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
