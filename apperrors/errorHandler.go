@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// エラーが発生した時のレスポンス処理をここで一括で行う。
 func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 	var appErr *MyAppError
 	if !errors.As(err, &appErr) {
