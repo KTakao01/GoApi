@@ -3,7 +3,10 @@ package apperrors
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
+
+	"github.com/KTakao01/GoApi/api/middlewares"
 )
 
 // エラーが発生した時のレスポンス処理をここで一括で行う。
@@ -16,6 +19,9 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 			Err:     err,
 		}
 	}
+
+	traceID := middlewares.GetTraceID(req.Context())
+	log.Printf("[%d]error: %s\n", traceID, appErr)
 
 	var statusCode int
 
