@@ -1,9 +1,9 @@
 # 概要
-「APIを作りながら学ぶGo中級者への道」（GoApi）をメインの教材として演習問題、カスタマイズを通してWEB開発に必要な知識を学ぶ。
-他、次の書籍も参考にした。「Docker/Kubernetes 実践コンテナ開発入門」(Docker)「GitHubActions実践入門」(GHA)「ゼロからわかるAmazon Web Services超入門」(AWS)
+「APIを作りながら学ぶGo中級者への道」（GoApi）をメインの教材として演習問題、カスタマイズを通してWEB開発に必要な知識を学ぶ。</br>
+他、次の書籍も参考にした。「Docker/Kubernetes 実践コンテナ開発入門」(Docker)「GitHubActions実践入門」(GHA)「ゼロからわかるAmazon Web Services超入門」(AWS)</br>
 # 学習の目的
-GoによるWEB開発で必要な知識を学ぶ。使い方を理解する。</br>
-以下、項目について学んだ。（引用）</br>
+GoによるWEB開発で必要な知識を学ぶ。</br>
+以下、項目について学んだ。</br>
 
 >1.HTTPサーバー</br>
 2.構造体とJsonの扱い方</br>
