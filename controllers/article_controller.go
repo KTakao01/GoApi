@@ -2,11 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/KTakao01/GoApi/apperrors"
+	"github.com/KTakao01/GoApi/common"
 	"github.com/KTakao01/GoApi/controllers/services"
 	"github.com/KTakao01/GoApi/models"
 	"github.com/gorilla/mux"
@@ -36,6 +39,14 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 		apperrors.ErrorHandler(w, req, err)
 		return
 	}
+
+	authedUserName := common.GetUserName(req.Context())
+	if reqArticle.UserName != authedUserName {
+		err := apperrors.NotMatchUser.Wrap(errors.New("does not match reqBody user and idtoken user"), "invalid parameter")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
+	fmt.Println(authedUserName)
 
 	article, err := c.service.PostArticleService(reqArticle)
 	if err != nil {
